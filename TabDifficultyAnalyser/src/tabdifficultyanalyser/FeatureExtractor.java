@@ -26,7 +26,8 @@ public class FeatureExtractor {
     private final int[][] fretCount;
     private int chordCount;
     private int totalNoteCount; // the total number of notes played in a piece
-    private String[] arff;
+    //private String[] arff; 
+    private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
     
     /**
      * Default constructor for a FeatureExtractor object
@@ -37,6 +38,7 @@ public class FeatureExtractor {
                                     // or frets if more Tabs are added to db
         chordCount = 0;
         totalNoteCount = 0;
+        rhythmFlagCount = new int[10];
     }
     
     private void resetNoteCount(){
@@ -50,6 +52,12 @@ public class FeatureExtractor {
             for(int j = 0; j < fretCount[0].length; j++){
                 fretCount[i][j] = 0;
             }
+        }
+    }
+    
+    private void resetRhythmFlagCount(){
+        for(int i = 0; i < rhythmFlagCount.length; i++){
+            rhythmFlagCount[i] = 0;
         }
     }
     
@@ -165,7 +173,7 @@ public class FeatureExtractor {
         catch(IOException e){
             System.out.println("e");
         }
-    }
+    } 
     
     /**
      * A method that checks the given fret and course so it can return the 
@@ -628,6 +636,145 @@ public class FeatureExtractor {
             System.out.println("e");
         }
     }
+    
+    
+    
+    public void rhythmFlagCount(TabDatabase tabDatabase){
+        // Sets up the arff file headers
+        prepareRhythmFlagCountArff();
+        
+        // Go through each Tab in the TabDatabase
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            // previousFlag used to store the previous note if it was given 'x'
+            // which indicates grouping
+            char previousFlag = ' ';
+            // Scan through each line of the Tab
+            for(String instance : tabDatabase.getTab(i).getInstances()){
+                // Checks that the line starts with a rhythm flag
+                if(Character.isDigit(instance.charAt(0)) || 
+                        instance.charAt(0) == 'x' ||
+                        instance.charAt(0) == '#'){  
+                    if(Character.isDigit(instance.charAt(0))){
+                        checkRhythmFlag(instance.charAt(0));
+                        previousFlag = instance.charAt(0);
+                    }
+                    // currently a problem with a few inputs here as previousFlag
+                    // is considered as ' ' 
+                    else if(instance.charAt(0) == 'x'){
+                        checkRhythmFlag(previousFlag);
+                    }
+                    else if(instance.charAt(0) == '#' &&
+                            Character.isDigit(instance.charAt(1))){
+                        checkRhythmFlag(instance.charAt(1));
+                        previousFlag = instance.charAt(1);
+                    }
+                    
+                }
+            }
+            rhythmFlagCountToArff(tabDatabase.getTab(i).getGrade());
+            resetRhythmFlagCount();
+        }
+    }
+    
+    private boolean checkRhythmFlag(char c){
+        
+        switch(c){
+            case 'W':
+                rhythmFlagCount[0]++;
+                break;
+            case 'w':
+                rhythmFlagCount[1]++;
+                break;
+            case '0':
+                rhythmFlagCount[2]++;
+                break;
+            case '1':
+                rhythmFlagCount[3]++;
+                break;
+            case '2':
+                rhythmFlagCount[4]++;
+                break;
+            case '3':
+                rhythmFlagCount[5]++;
+                break;
+            case '4':
+                rhythmFlagCount[6]++;
+                break;
+            case '5':
+                rhythmFlagCount[7]++;
+                break;
+            case '6':
+                rhythmFlagCount[8]++;
+                break;
+            case 't':
+                rhythmFlagCount[9]++;
+                break;
+            default:
+                System.out.println("Invalid input: " + c);
+                return false;
+        }
+        return true;
+    }
+    
+    private void prepareRhythmFlagCountArff(){
+        String fileName = "rhythmFlagCount.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("@relation rhythmFlagCount");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@attribute 2W numeric");
+            bw.newLine();
+            bw.write("@attribute W numeric");
+            bw.newLine();
+            bw.write("@attribute 1/2 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/4 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/8 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/16 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/32 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/64 numeric");
+            bw.newLine();
+            bw.write("@attribute 1/128 numeric");
+            bw.newLine();
+            bw.write("@attribute triplet numeric");
+            bw.newLine();
+            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@data");
+            bw.newLine();
+            
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+    }
+    
+    private void rhythmFlagCountToArff(int grade){
+        String fileName = "rhythmFlagCount.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(int i = 0; i < rhythmFlagCount.length; i++){
+                bw.write(rhythmFlagCount[i]+",");
+            }
+            bw.write(new Integer(grade).toString());
+            bw.newLine();
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println("e");
+        }
+    } 
 }
 
 
