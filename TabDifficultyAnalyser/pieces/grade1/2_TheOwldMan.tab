@@ -1,26 +1,7 @@
 {\CL The Owd Man}
 {TCD MS 408\/2 p.83 edited/Anon.}
-b
-Sc
-3* \1c  a
-x| \2d
-2a
-2#a   a
-xa
-2#\1c  a
-x \2d
-2#\1c  a
-x \2d
-b
-2# \1c\2d a
-x| \3d
-x|a
-2*a   a
-x|\4f
-1\3ea   a
-1\3aa   a
-b
 
+Sc
 b
 3* \1c  a
 x| \2d
@@ -41,8 +22,7 @@ x|  a
 1  \2d\1ca
 1  \2d\1ca
 b
-B
-1acd a
+1 cd a
 2a   a
 3c
 3e
@@ -51,6 +31,28 @@ B
 3c
 2a   a
 2 d
+b
+
+% Line 2
+
+b
+3* \1c  a
+x| \2d
+2a
+2#a   a
+xa
+2#\1c  a
+x \2d
+2#\1c  a
+x \2d
+b
+2# \1c\2d a
+x| \3d
+x|a
+2*a   a
+x|\4f
+1\3ea   a
+1\3aa   a
 b
 B
 e

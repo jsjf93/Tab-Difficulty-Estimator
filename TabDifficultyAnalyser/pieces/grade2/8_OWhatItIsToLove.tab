@@ -1,0 +1,62 @@
+{\CL/8. O WHAT IT IS TO LOVE}
+{/Dallis p.17 }
+
+b
+S3
+1 abc
+2#     a
+x a
+2#  b
+x     a
+b
+1  abc
+2#    c
+x a
+2#  a
+x    c
+b
+1 abc
+2#     a
+x a
+2#  b
+x     a
+b
+1  abc
+2#    c
+x a
+2#  a
+x    c
+b
+
+% line 2
+
+b
+2# abc
+x  a
+2#  b
+x  d
+2# a
+x c
+b
+2# d a
+x c
+2# a
+x  d
+2#  b
+x  a
+b
+1 abc
+2#     a
+x     c
+2#     d
+x    a
+b
+1  abc
+2#    c
+x a
+2#  a
+x    c
+.
+b
+B
+e
