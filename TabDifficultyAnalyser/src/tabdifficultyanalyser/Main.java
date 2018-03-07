@@ -16,7 +16,7 @@ public class Main{
         // Read all the tabs into the database
         db.readInTabDatabase(rootFolder);
         // Print out the size of the database
-        //System.out.println(db.getSize());
+        System.out.println(db.getSize());
         // Print out a tab to check that it has been read correctly
         //db.printPiece(0);
         
