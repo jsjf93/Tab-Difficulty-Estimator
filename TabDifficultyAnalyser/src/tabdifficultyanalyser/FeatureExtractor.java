@@ -34,7 +34,7 @@ public class FeatureExtractor {
      */
     public FeatureExtractor(){
         noteCount = new int[12];
-        fretCount = new int[6][16]; // note: may need to adjust for extra strings
+        fretCount = new int[10][16]; // note: may need to adjust for extra courses
                                     // or frets if more Tabs are added to db
         chordCount = 0;
         totalNoteCount = 0;
@@ -82,22 +82,13 @@ public class FeatureExtractor {
             // Scan through each line of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#'){  
-                    
+                if(isRhythmFlag(instance)){
                     int course = 1; // course refers to pair of strings
                     for(int j = 1; j < instance.length(); j++){
-                        if(instance.charAt(j) == ' ' || 
-                                instance.charAt(j) == '/'){
+                        if(instance.charAt(j)==' ' || instance.charAt(j)=='/'){
                             course++;
                         }
-                        else if(Character.isLetter(instance.charAt(j)) &&
-                                course <= 6 &&
-                                instance.charAt(j) != 'X' &&
-                                instance.charAt(j) != 'U' &&
-                                instance.charAt(j) != 'x' &&
-                                instance.charAt(j) != 't'){
+                        else if(isValidNote(instance, j) && course <= 10){
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
@@ -194,49 +185,43 @@ public class FeatureExtractor {
         switch(course){
             case 1:
                 open = "g";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 2:
                 open = "d";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 3:
                 open = "a";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 4:
                 open = "f";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 5:
                 open = "c";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 6:
                 open = "g";
-                while(!open.equals(CHROMATIC_SCALE[i])){
-                    i++;
-                }
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 7:
+                open = "f";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 8:
+                open = "d#";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 9:
+                open = "d";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 10:
-                break;
-            case 11:
+                open = "c";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             default:
                 System.out.println("There was a problem");
@@ -279,18 +264,9 @@ public class FeatureExtractor {
             // Go through each line (or instance) of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#' ||
-                        instance.charAt(0) == 'Y'){
-                    //System.out.print(instance+": ");
+                if(isRhythmFlag(instance)){
                     for(int j = 1; j < instance.length(); j++){
-                        if(Character.isLetter(instance.charAt(j)) &&
-                                instance.charAt(j) != 'X' &&
-                                instance.charAt(j) != 'U' &&
-                                instance.charAt(j) != 'x' &&
-                                //instance.charAt(j) != '#' &&
-                                instance.charAt(j) != 't'){
+                        if(isValidNote(instance, j)){
                             char c = Character.toLowerCase(instance.charAt(j));
                             int asciiValue = (int)c;
                             int fret = asciiValue-97;
@@ -299,12 +275,10 @@ public class FeatureExtractor {
                             }
                         }
                     }
-                    //System.out.println();
                 }
             }
             highestFretToArff(tabDatabase.getTab(i).getGrade());
             highestFret = 0;
-            //System.out.println("*****************************************");
         }
     }
     
@@ -336,22 +310,15 @@ public class FeatureExtractor {
             // Scan through each line of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#'){  
-                    
+                if(isRhythmFlag(instance)){  
                     int course = 1; // course refers to pair of strings
                     for(int j = 1; j < instance.length(); j++){
                         if(instance.charAt(j) == ' ' || 
                                 instance.charAt(j) == '/'){
                             course++;
                         }
-                        else if(Character.isLetter(instance.charAt(j)) &&
-                                course <= 6 &&
-                                instance.charAt(j) != 'X' &&
-                                instance.charAt(j) != 'U' &&
-                                instance.charAt(j) != 'x' &&
-                                instance.charAt(j) != 't'){
+                        else if(isValidNote(instance, j) &&
+                                course <= 10){
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
@@ -367,7 +334,6 @@ public class FeatureExtractor {
                     }
                 }
             }
-            //noteCountToArff(tabDatabase.getTab(i).getGrade());
             noteCountHighestFretToArff(tabDatabase.getTab(i).getGrade());
             resetNoteCount();
             highestFret = 0;
@@ -433,10 +399,7 @@ public class FeatureExtractor {
             // Scan through each line of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#'){  
-                    
+                if(isRhythmFlag(instance)){  
                     int course = 1; // course refers to pair of strings
                     for(int j = 1; j < instance.length(); j++){
                         // Checks course
@@ -445,25 +408,17 @@ public class FeatureExtractor {
                             course++;
                         }
                         // Checks for letter indicating fret
-                        else if(Character.isLetter(instance.charAt(j)) &&
-                                course <= 6 &&
-                                instance.charAt(j) != 'X' &&
-                                instance.charAt(j) != 'U' &&
-                                instance.charAt(j) != 'x' &&
-                                instance.charAt(j) != 't'){
+                        else if(isValidNote(instance, j) &&
+                                course <= 10){
                             char c = Character.toLowerCase(instance.charAt(j));
                             int asciiValue = (int)c;
-                            int fret = asciiValue-97;
-                            //System.out.println("Course: " + course + "Fret: " + fret);
+                            int fret = asciiValue - 97;
                             fretCount[course-1][fret]++;
                             course++;
                         }
                     }
                 }
             }
-            // Need similar methods
-            //noteCountToArff(tabDatabase.getTab(i).getGrade());
-            //resetNoteCount();
             fretCountToArff(tabDatabase.getTab(i).getGrade());
             resetFretCount();
         }
@@ -550,20 +505,11 @@ public class FeatureExtractor {
             // Go through each line (or instance) of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#' ||
-                        instance.charAt(0) == 'Y'){
+                if(isRhythmFlag(instance)){
                     int numNotesInInstance = 0;
                     for(int j = 1; j < instance.length(); j++){
-                        if(Character.isLetter(instance.charAt(j)) &&
-                                instance.charAt(j) != 'X' &&
-                                instance.charAt(j) != 'U' &&
-                                instance.charAt(j) != 'x' &&
-                                //instance.charAt(j) != '#' &&
-                                instance.charAt(j) != 't'){
+                        if(isValidNote(instance, j)){
                             numNotesInInstance++;
-                            //System.out.println(numNotesInInstance);
                         }
                     }
                     if(numNotesInInstance >= 3){
@@ -582,7 +528,7 @@ public class FeatureExtractor {
         try{
             FileWriter fw = new FileWriter(fileName, true);
             BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(chordCount+",");
+            bw.write(chordCount + ",");
             bw.write(new Integer(grade).toString());
             bw.newLine();
             bw.close();
@@ -651,9 +597,7 @@ public class FeatureExtractor {
             // Scan through each line of the Tab
             for(String instance : tabDatabase.getTab(i).getInstances()){
                 // Checks that the line starts with a rhythm flag
-                if(Character.isDigit(instance.charAt(0)) || 
-                        instance.charAt(0) == 'x' ||
-                        instance.charAt(0) == '#'){  
+                if(isRhythmFlag(instance)){  
                     if(Character.isDigit(instance.charAt(0))){
                         checkRhythmFlag(instance.charAt(0));
                         previousFlag = instance.charAt(0);
@@ -668,7 +612,6 @@ public class FeatureExtractor {
                         checkRhythmFlag(instance.charAt(1));
                         previousFlag = instance.charAt(1);
                     }
-                    
                 }
             }
             rhythmFlagCountToArff(tabDatabase.getTab(i).getGrade());
@@ -775,6 +718,35 @@ public class FeatureExtractor {
             System.out.println("e");
         }
     } 
+    
+    /**
+     * Static method that checks that a given line (instance) begins with a
+     * valid rhythm flag
+     * @param instance
+     * @return boolean
+     */
+    private static boolean isRhythmFlag(String instance){
+        return Character.isDigit(instance.charAt(0)) || 
+                instance.charAt(0) == 'x' || 
+                instance.charAt(0) == '#' ||
+                instance.charAt(0) == 'Y' ||
+                instance.charAt(0) == 'y';
+    }
+    
+    
+    /**
+     * Static method that checks if a given character in an instance is a valid
+     * note
+     * @param instance
+     * @param course
+     * @param j
+     * @return boolean
+     */
+    private static boolean isValidNote(String instance, int j){
+        return Character.isLetter(instance.charAt(j)) &&
+                instance.charAt(j) != 'X' &&
+                instance.charAt(j) != 'U' &&
+                instance.charAt(j) != 'x' &&
+                instance.charAt(j) != 't';
+    }
 }
-
-
