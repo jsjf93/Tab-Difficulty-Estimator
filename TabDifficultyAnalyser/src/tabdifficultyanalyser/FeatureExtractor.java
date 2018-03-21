@@ -34,7 +34,7 @@ public class FeatureExtractor {
      */
     public FeatureExtractor(){
         noteCount = new int[12];
-        fretCount = new int[6][16]; // note: may need to adjust for extra strings
+        fretCount = new int[10][16]; // note: may need to adjust for extra courses
                                     // or frets if more Tabs are added to db
         chordCount = 0;
         totalNoteCount = 0;
@@ -88,7 +88,7 @@ public class FeatureExtractor {
                         if(instance.charAt(j)==' ' || instance.charAt(j)=='/'){
                             course++;
                         }
-                        else if(isValidNote(instance, j) && course <= 6){
+                        else if(isValidNote(instance, j) && course <= 10){
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
@@ -208,14 +208,20 @@ public class FeatureExtractor {
                 while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 7:
+                open = "f";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 8:
+                open = "d#";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 9:
+                open = "d";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             case 10:
-                break;
-            case 11:
+                open = "c";
+                while(!open.equals(CHROMATIC_SCALE[i])) i++;
                 break;
             default:
                 System.out.println("There was a problem");
@@ -312,7 +318,7 @@ public class FeatureExtractor {
                             course++;
                         }
                         else if(isValidNote(instance, j) &&
-                                course <= 6){
+                                course <= 10){
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
@@ -403,7 +409,7 @@ public class FeatureExtractor {
                         }
                         // Checks for letter indicating fret
                         else if(isValidNote(instance, j) &&
-                                course <= 6){
+                                course <= 10){
                             char c = Character.toLowerCase(instance.charAt(j));
                             int asciiValue = (int)c;
                             int fret = asciiValue - 97;
