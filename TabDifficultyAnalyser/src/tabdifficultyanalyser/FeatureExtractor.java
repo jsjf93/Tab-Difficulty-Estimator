@@ -27,7 +27,9 @@ public class FeatureExtractor {
     private int chordCount;
     private int totalNoteCount; // the total number of notes played in a piece
     //private String[] arff; 
-    private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
+    private final int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
+    
+    private final int[][] advancedFretCount;
     
     /**
      * Default constructor for a FeatureExtractor object
