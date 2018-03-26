@@ -407,4 +407,63 @@ public class ArffUtility {
             System.out.println("e");
         }
     } 
+    
+    /**
+     * A method that takes two parameters, m and n and creates an ARFF for
+     * fretCount.
+     * @param m - the number of rows in fretCount
+     * @param n - the number of columns in fretCount
+     */
+    public void prepareAdvancedFretCountArff(int m, int n){
+        String fileName = "advancedFretCount.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("@relation advancedFretCount");
+            bw.newLine();
+            bw.newLine();
+            for(int i = 1; i <= m; i++){
+                for(int j = 0; j < n; j++){
+                    bw.write("@attribute [" + i + "][" + j + "] numeric");
+                    bw.newLine();
+                }
+            }
+            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@data");
+            bw.newLine();
+            
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println("e");
+        }
+    }
+    
+    /**
+     * A method that writes the fretCount data to an ARFF
+     * @param advancedFretCount
+     * @param grade 
+     */
+    public void advancedFretCountToArff(int[][] advancedFretCount, int grade){
+        String fileName = "fretCount.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(int i = 0; i < advancedFretCount.length; i++){
+                for(int j = 0; j < advancedFretCount[0].length; j++){
+                    bw.write(advancedFretCount[i][j]+",");
+                }
+            }
+            bw.write(Integer.toString(grade));
+            bw.newLine();
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println("e");
+        }
+    }
 }

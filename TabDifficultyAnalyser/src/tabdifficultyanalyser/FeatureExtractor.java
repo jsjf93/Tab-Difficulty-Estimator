@@ -113,71 +113,7 @@ public class FeatureExtractor {
         }
     }
     
-    private void prepareNoteCountArff(){
-        String fileName = "noteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation noteCount");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute a numeric");
-            bw.newLine();
-            bw.write("@attribute a# numeric");
-            bw.newLine();
-            bw.write("@attribute b numeric");
-            bw.newLine();
-            bw.write("@attribute c numeric");
-            bw.newLine();
-            bw.write("@attribute c# numeric");
-            bw.newLine();
-            bw.write("@attribute d numeric");
-            bw.newLine();
-            bw.write("@attribute d# numeric");
-            bw.newLine();
-            bw.write("@attribute e numeric");
-            bw.newLine();
-            bw.write("@attribute f numeric");
-            bw.newLine();
-            bw.write("@attribute f# numeric");
-            bw.newLine();
-            bw.write("@attribute g numeric");
-            bw.newLine();
-            bw.write("@attribute g# numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    private void noteCountToArff(int grade){
-        String fileName = "noteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            for(int i = 0; i < noteCount.length; i++){
-                bw.write(noteCount[i]+",");
-            }
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    } 
-    
-    /**
+ /**
      * A method that checks the given fret and course so it can return the 
      * CHROMATIC_SCALE variable array position of the note being played.
      * @param c
@@ -442,6 +378,21 @@ public class FeatureExtractor {
                 return false;
         }
         return true;
+    }
+    
+    
+    /**
+     * A method that seeks the bar of a Tab that features the highest number of
+     * notes. It then takes the count that each fret is played.
+     * @param tabDatabase 
+     */
+    public void advancedFretCount(TabDatabase tabDatabase){
+        // Find the most bar with the most notes
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            for(String instance : tabDatabase.getTab(i).getInstances()){
+                
+            }
+        }
     }
     
     /**
