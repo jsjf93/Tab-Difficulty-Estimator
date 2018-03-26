@@ -25,16 +25,12 @@ public class FeatureExtractor {
     private final int[][] fretCount;
     private int chordCount;
     private int totalNoteCount; // the total number of notes played in a piece
-    //private String[] arff; 
-<<<<<<< HEAD
     private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
     // A instance of ArffUtility used to create and write arffs
     private final ArffUtility arffUtility;
-=======
-    private final int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
+    //private final int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
     
     private final int[][] advancedFretCount;
->>>>>>> master
     
     /**
      * Default constructor for a FeatureExtractor object
@@ -47,6 +43,7 @@ public class FeatureExtractor {
         totalNoteCount = 0;
         rhythmFlagCount = new int[10];
         arffUtility = new ArffUtility();
+        advancedFretCount = new int[10][16];
     }
     
     private void resetNoteCount(){
