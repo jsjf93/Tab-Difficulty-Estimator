@@ -9,7 +9,6 @@ package tabdifficultyanalyser;
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Scanner;
 
 /**
  *
@@ -27,9 +26,15 @@ public class FeatureExtractor {
     private int chordCount;
     private int totalNoteCount; // the total number of notes played in a piece
     //private String[] arff; 
+<<<<<<< HEAD
+    private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
+    // A instance of ArffUtility used to create and write arffs
+    private final ArffUtility arffUtility;
+=======
     private final int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
     
     private final int[][] advancedFretCount;
+>>>>>>> master
     
     /**
      * Default constructor for a FeatureExtractor object
@@ -41,6 +46,7 @@ public class FeatureExtractor {
         chordCount = 0;
         totalNoteCount = 0;
         rhythmFlagCount = new int[10];
+        arffUtility = new ArffUtility();
     }
     
     private void resetNoteCount(){
@@ -76,8 +82,11 @@ public class FeatureExtractor {
      */
     public void noteCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        prepareNoteCountArff();
-        prepareTotalNoteCountArff();
+        //prepareNoteCountArff();
+        arffUtility.prepareNoteCountArff();
+        
+        //prepareTotalNoteCountArff();
+        arffUtility.prepareTotalNoteCountArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
@@ -98,8 +107,11 @@ public class FeatureExtractor {
                     }
                 }
             }
-            noteCountToArff(tabDatabase.getTab(i).getGrade());
-            totalNoteCountToArff(tabDatabase.getTab(i).getGrade());
+            //noteCountToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.noteCountToArff(noteCount, tabDatabase.getTab(i).getGrade());
+            //totalNoteCountToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.totalNoteCountToArff(noteCount, totalNoteCount, 
+                    tabDatabase.getTab(i).getGrade());
             resetNoteCount();
         }
     }
@@ -235,32 +247,9 @@ public class FeatureExtractor {
                                 // played in the CHROMATIC_SCALE
     }
     
-    private void prepareHighestFretArff(){
-        String fileName = "highestFret.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation highestFret");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute highestFret numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
     
     public void highestFret(TabDatabase tabDatabase){
-        prepareHighestFretArff();
+        arffUtility.prepareHighestFretArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             // Go through each line (or instance) of the Tab
@@ -279,33 +268,15 @@ public class FeatureExtractor {
                     }
                 }
             }
-            highestFretToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.highestFretToArff(highestFret, tabDatabase.getTab(i).getGrade());
             highestFret = 0;
         }
     }
     
-    private void highestFretToArff(int grade){
-        String fileName = "highestFret.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(highestFret+",");
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-        
-    }
-    
-    
     
     public void noteCountAndHighestFret(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        prepareNoteCountHighestFretArff();
+        arffUtility.prepareNoteCountHighestFretArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
@@ -336,65 +307,17 @@ public class FeatureExtractor {
                     }
                 }
             }
-            noteCountHighestFretToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.noteCountHighestFretToArff(noteCount, highestFret, 
+                    tabDatabase.getTab(i).getGrade());
             resetNoteCount();
             highestFret = 0;
         }
     }
     
-    private void prepareNoteCountHighestFretArff(){
-        String fileName = "noteCountHighestFret.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation noteCountHighestFret");
-            bw.newLine();
-            bw.newLine();
-            
-            for(int i = 0; i < CHROMATIC_SCALE.length; i++){
-                bw.write("@attribute " + CHROMATIC_SCALE[i] + " numeric");
-                bw.newLine();
-            }
-            bw.write("@attribute highestFret numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    private void noteCountHighestFretToArff(int grade){
-        String fileName = "noteCountHighestFret.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            for(int i = 0; i < noteCount.length; i++){
-                bw.write(noteCount[i]+",");
-            }
-            bw.write(highestFret+",");
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-        
-    }
-    
     
     public void fretCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        prepareFretCountArff();
+        arffUtility.prepareFretCountArff(fretCount.length, fretCount[0].length);
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
@@ -421,87 +344,13 @@ public class FeatureExtractor {
                     }
                 }
             }
-            fretCountToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.fretCountToArff(fretCount, tabDatabase.getTab(i).getGrade());
             resetFretCount();
         }
     }
     
-    private void prepareFretCountArff(){
-        String fileName = "fretCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation fretCount");
-            bw.newLine();
-            bw.newLine();
-            for(int i = 1; i <= fretCount.length; i++){
-                for(int j = 0; j < fretCount[0].length; j++){
-                    bw.write("@attribute [" + i + "][" + j + "] numeric");
-                    bw.newLine();
-                }
-            }
-            
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    private void fretCountToArff(int grade){
-        String fileName = "fretCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            for(int i = 0; i < fretCount.length; i++){
-                for(int j = 0; j < fretCount[0].length; j++){
-                    bw.write(fretCount[i][j]+",");
-                }
-            }
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    
-    private void prepareChordCountArff(){
-        String fileName = "chordCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation chordCount");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute chordCount numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println(e);
-        }
-    }
-    
     public void chordCount(TabDatabase tabDatabase){
-        prepareChordCountArff();
+        arffUtility.prepareChordCountArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             // Go through each line (or instance) of the Tab
@@ -519,77 +368,14 @@ public class FeatureExtractor {
                     }
                 }
             }
-            chordCountToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.chordCountToArff(chordCount, tabDatabase.getTab(i).getGrade());
             chordCount = 0;
         }
     }
     
-    private void chordCountToArff(int grade){
-        String fileName = "chordCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write(chordCount + ",");
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    private void prepareTotalNoteCountArff(){
-        String fileName = "totalNoteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation totalNoteCount");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute totalNoteCount numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println(e);
-        }
-    }
-    
-    private void totalNoteCountToArff(int grade){
-        String fileName = "totalNoteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            
-            for(int i = 0; i < noteCount.length; i++){
-                totalNoteCount += noteCount[i];
-            }
-            bw.write(totalNoteCount+",");
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-            totalNoteCount = 0;
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    
-    
     public void rhythmFlagCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        prepareRhythmFlagCountArff();
+        arffUtility.prepareRhythmFlagCountArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
@@ -616,7 +402,7 @@ public class FeatureExtractor {
                     }
                 }
             }
-            rhythmFlagCountToArff(tabDatabase.getTab(i).getGrade());
+            arffUtility.rhythmFlagCountToArff(rhythmFlagCount, tabDatabase.getTab(i).getGrade());
             resetRhythmFlagCount();
         }
     }
@@ -660,66 +446,6 @@ public class FeatureExtractor {
         }
         return true;
     }
-    
-    private void prepareRhythmFlagCountArff(){
-        String fileName = "rhythmFlagCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation rhythmFlagCount");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute 2W numeric");
-            bw.newLine();
-            bw.write("@attribute W numeric");
-            bw.newLine();
-            bw.write("@attribute 1/2 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/4 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/8 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/16 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/32 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/64 numeric");
-            bw.newLine();
-            bw.write("@attribute 1/128 numeric");
-            bw.newLine();
-            bw.write("@attribute triplet numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println(e);
-        }
-    }
-    
-    private void rhythmFlagCountToArff(int grade){
-        String fileName = "rhythmFlagCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            for(int i = 0; i < rhythmFlagCount.length; i++){
-                bw.write(rhythmFlagCount[i]+",");
-            }
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    } 
     
     /**
      * Static method that checks that a given line (instance) begins with a
