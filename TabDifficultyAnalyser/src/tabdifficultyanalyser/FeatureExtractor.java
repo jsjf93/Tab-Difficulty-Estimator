@@ -28,6 +28,7 @@ public class FeatureExtractor {
     //private String[] arff; 
     private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
     // A instance of ArffUtility used to create and write arffs
+    private int meanInstancesPerBar;
     private final ArffUtility arffUtility;
     
     /**
@@ -76,10 +77,7 @@ public class FeatureExtractor {
      */
     public void noteCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        //prepareNoteCountArff();
         arffUtility.prepareNoteCountArff();
-        
-        //prepareTotalNoteCountArff();
         arffUtility.prepareTotalNoteCountArff();
         
         // Go through each Tab in the TabDatabase
@@ -101,78 +99,12 @@ public class FeatureExtractor {
                     }
                 }
             }
-            //noteCountToArff(tabDatabase.getTab(i).getGrade());
             arffUtility.noteCountToArff(noteCount, tabDatabase.getTab(i).getGrade());
-            //totalNoteCountToArff(tabDatabase.getTab(i).getGrade());
             arffUtility.totalNoteCountToArff(noteCount, totalNoteCount, 
                     tabDatabase.getTab(i).getGrade());
             resetNoteCount();
         }
     }
-    
-    private void prepareNoteCountArff(){
-        String fileName = "noteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName);
-            BufferedWriter bw = new BufferedWriter(fw);
-            bw.write("@relation noteCount");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@attribute a numeric");
-            bw.newLine();
-            bw.write("@attribute a# numeric");
-            bw.newLine();
-            bw.write("@attribute b numeric");
-            bw.newLine();
-            bw.write("@attribute c numeric");
-            bw.newLine();
-            bw.write("@attribute c# numeric");
-            bw.newLine();
-            bw.write("@attribute d numeric");
-            bw.newLine();
-            bw.write("@attribute d# numeric");
-            bw.newLine();
-            bw.write("@attribute e numeric");
-            bw.newLine();
-            bw.write("@attribute f numeric");
-            bw.newLine();
-            bw.write("@attribute f# numeric");
-            bw.newLine();
-            bw.write("@attribute g numeric");
-            bw.newLine();
-            bw.write("@attribute g# numeric");
-            bw.newLine();
-            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
-            bw.newLine();
-            bw.newLine();
-            bw.write("@data");
-            bw.newLine();
-            
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    }
-    
-    private void noteCountToArff(int grade){
-        String fileName = "noteCount.arff";
-        
-        try{
-            FileWriter fw = new FileWriter(fileName, true);
-            BufferedWriter bw = new BufferedWriter(fw);
-            for(int i = 0; i < noteCount.length; i++){
-                bw.write(noteCount[i]+",");
-            }
-            bw.write(new Integer(grade).toString());
-            bw.newLine();
-            bw.close();
-        }
-        catch(IOException e){
-            System.out.println("e");
-        }
-    } 
     
     /**
      * A method that checks the given fret and course so it can return the 
@@ -284,8 +216,7 @@ public class FeatureExtractor {
                                 instance.charAt(j) == '/'){
                             course++;
                         }
-                        else if(isValidNote(instance, j) &&
-                                course <= 10){
+                        else if(isValidNote(instance, j) && course <= 10){
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
@@ -453,6 +384,44 @@ public class FeatureExtractor {
                 instance.charAt(0) == '#' ||
                 instance.charAt(0) == 'Y' ||
                 instance.charAt(0) == 'y';
+    }
+    
+    /**
+     * A method that finds the mean number of notes per bar in a Tab.
+     * This takes into account rests between notes as these can increase the 
+     * complexity of the piece by adding syncopation 
+     * @param tabDatabase 
+     */
+    public void meanInstancesPerBar(TabDatabase tabDatabase){
+        // Sets up the arff file headers
+        arffUtility.prepareMeanInstancesPerBarArff();
+        
+        // Go through each Tab in the TabDatabase
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            // Variable to keep track of the number of bars
+            int bars = 0;
+            // Scan through each line of the Tab
+            for(String instance : tabDatabase.getTab(i).getInstances()){
+                // Checks that the line starts with a rhythm flag
+                if(isRhythmFlag(instance)){
+                    for(int j = 1; j < instance.length(); j++){
+                        if(isValidNote(instance, j)){
+                            meanInstancesPerBar++;
+                        }
+                    }
+                }
+                else if(instance.equals("b")){
+                    bars++;
+                }
+            }
+            // Get the mean
+            System.out.println("Instances: " + meanInstancesPerBar);
+            System.out.println("Bars: " + bars);
+            meanInstancesPerBar /= (bars-1);
+            System.out.println("Mean: " + meanInstancesPerBar);
+            arffUtility.meanInstancesPerBarArff(meanInstancesPerBar, tabDatabase.getTab(i).getGrade());
+            meanInstancesPerBar = 0;
+        }
     }
     
     

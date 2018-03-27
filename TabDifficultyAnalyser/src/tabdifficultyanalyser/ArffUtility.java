@@ -330,7 +330,7 @@ public class ArffUtility {
                 totalNoteCount += noteCount[i];
             }
             bw.write(totalNoteCount+",");
-            bw.write(new Integer(grade).toString());
+            bw.write(Integer.toString(grade));
             bw.newLine();
             bw.close();
             totalNoteCount = 0;
@@ -407,4 +407,52 @@ public class ArffUtility {
             System.out.println("e");
         }
     } 
+    
+    /**
+     * A method that prepares the meanInstancesPerBar ARFF
+     */
+    public void prepareMeanInstancesPerBarArff(){
+        String fileName = "meanInstancesPerBar.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("@relation meanInstancesPerBar");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@attribute meanInstancesPerBar numeric");
+            bw.newLine();
+            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@data");
+            bw.newLine();
+            
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+    }
+    
+    /**
+     * A method that writes the meanInstancesPerBar data to an ARFF
+     * @param meanInstancesPerBar
+     * @param grade 
+     */
+    public void meanInstancesPerBarArff(int meanInstancesPerBar, int grade){
+        String fileName = "meanInstancesPerBar.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write(meanInstancesPerBar +",");
+            bw.write(Integer.toString(grade));
+            bw.newLine();
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println("e");
+        }
+    }
 }
