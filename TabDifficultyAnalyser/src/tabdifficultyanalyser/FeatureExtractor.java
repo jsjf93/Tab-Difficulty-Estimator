@@ -66,6 +66,14 @@ public class FeatureExtractor {
         }
     }
     
+    private void resetAdvancedFretCount(){
+        for(int i = 0; i < advancedFretCount.length; i++){
+            for(int j = 0; j < advancedFretCount[0].length; j++){
+                advancedFretCount[i][j] = 0;
+            }
+        }
+    }
+    
     /**
      * A simple method that takes an instance of a TabDatabase and analyses
      * the note counts for each piece of lute tablature. The counts are stored
@@ -387,11 +395,55 @@ public class FeatureExtractor {
      * @param tabDatabase 
      */
     public void advancedFretCount(TabDatabase tabDatabase){
+        arffUtility.prepareAdvancedFretCountArff(advancedFretCount.length, 
+            advancedFretCount[0].length);
+        
         // Find the most bar with the most notes
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            for(String instance : tabDatabase.getTab(i).getInstances()){
+            // Extract a bar
+            Tab current = new Tab(); 
+            Tab mostNotes = new Tab();
+            
+            for(int j = 0; j < tabDatabase.getTab(i).getInstances().size(); j++){
+                String instance = tabDatabase.getTab(i).getInstances().get(j);
                 
+                if(isRhythmFlag(instance)){
+                    current.addInstance(instance);
+                }
+                else if(instance.charAt(0) == 'b'){
+                    if(mostNotes.getNumberOfNotes() < current.getNumberOfNotes()){
+                        mostNotes = current;
+                    }
+                    current = new Tab();
+                }
             }
+            
+            // Get the advancedFretCount for the bar with the highest number
+            // of notes
+            for(String instance : mostNotes.getInstances()){
+                // Checks that the line starts with a rhythm flag
+                if(isRhythmFlag(instance)){  
+                    int course = 1; // course refers to pair of strings
+                    for(int j = 1; j < instance.length(); j++){
+                        // Checks course
+                        if(instance.charAt(j) == ' ' || 
+                                instance.charAt(j) == '/'){
+                            course++;
+                        }
+                        // Checks for letter indicating fret
+                        else if(isValidNote(instance, j) && course <= 10){
+                            char c = Character.toLowerCase(instance.charAt(j));
+                            int asciiValue = (int)c;
+                            int fret = asciiValue - 97;
+                            advancedFretCount[course-1][fret]++;
+                            course++;
+                        }
+                    }
+                }
+            }
+            // Get the advancedFretCount
+            arffUtility.advancedFretCountToArff(advancedFretCount, tabDatabase.getTab(i).getGrade());
+            resetAdvancedFretCount();
         }
     }
     

@@ -27,7 +27,7 @@ public class Main{
         ft.fretCount(db);
         ft.chordCount(db);
         ft.rhythmFlagCount(db);
-        
+        ft.advancedFretCount(db);
     }
     
 }

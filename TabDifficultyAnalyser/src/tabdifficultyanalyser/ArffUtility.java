@@ -448,7 +448,7 @@ public class ArffUtility {
      * @param grade 
      */
     public void advancedFretCountToArff(int[][] advancedFretCount, int grade){
-        String fileName = "fretCount.arff";
+        String fileName = "advancedFretCount.arff";
         
         try{
             FileWriter fw = new FileWriter(fileName, true);

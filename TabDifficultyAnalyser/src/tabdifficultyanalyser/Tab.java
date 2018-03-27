@@ -50,6 +50,55 @@ public class Tab {
         return grade;
     }
     
+    public int getNumberOfNotes(){
+        int count = 0;
+        for(String instance : instances){
+            // Check that instance starts with a rhythm flag
+            if(isRhythmFlag(instance)){
+                // Loop through each course (pair of lute strings)
+                for(int j = 1; j < instance.length(); j++){
+                    // Check that current note is a valid note
+                    if(isValidNote(instance, j)){
+                        count++;
+                    }
+                }
+            }
+        }
+        return count;
+    }
+    
+    /**
+     * Static method that checks that a given line (instance) begins with a
+     * valid rhythm flag
+     * @param instance
+     * @return boolean
+     */
+    private static boolean isRhythmFlag(String instance){
+        return Character.isDigit(instance.charAt(0)) || 
+                instance.charAt(0) == 'x' || 
+                instance.charAt(0) == '#' ||
+                instance.charAt(0) == 'Y' ||
+                instance.charAt(0) == 'y';
+    }
+    
+    
+    /**
+     * Static method that checks if a given character in an instance is a valid
+     * note
+     * @param instance
+     * @param course
+     * @param j
+     * @return boolean
+     */
+    private static boolean isValidNote(String instance, int j){
+        return Character.isLetter(instance.charAt(j)) &&
+                instance.charAt(j) != 'X' &&
+                instance.charAt(j) != 'U' &&
+                instance.charAt(j) != 'x' &&
+                instance.charAt(j) != 't';
+    }
+    
+    
     public String toString(){
         StringBuilder sb = new StringBuilder();
         sb.append("Grade: ");
