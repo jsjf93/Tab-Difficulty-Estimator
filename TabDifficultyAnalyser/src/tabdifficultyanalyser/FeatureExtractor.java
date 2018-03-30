@@ -46,12 +46,18 @@ public class FeatureExtractor {
         advancedFretCount = new int[10][16];
     }
     
+    /**
+     * Sets all the values in noteCount to 0
+     */
     private void resetNoteCount(){
         for(int i = 0; i < noteCount.length; i++){
             noteCount[i] = 0;
         }
     }
     
+    /**
+     * Sets all the values of fretCount to 0
+     */
     private void resetFretCount(){
         for(int i = 0; i < fretCount.length; i++){
             for(int j = 0; j < fretCount[0].length; j++){
@@ -60,12 +66,18 @@ public class FeatureExtractor {
         }
     }
     
+    /**
+     * Sets all the values for rhythmFlagCount to 0
+     */
     private void resetRhythmFlagCount(){
         for(int i = 0; i < rhythmFlagCount.length; i++){
             rhythmFlagCount[i] = 0;
         }
     }
     
+    /**
+     * Sets all the values for advancedFretCount to 0
+     */
     private void resetAdvancedFretCount(){
         for(int i = 0; i < advancedFretCount.length; i++){
             for(int j = 0; j < advancedFretCount[0].length; j++){
@@ -87,12 +99,8 @@ public class FeatureExtractor {
      */
     public void noteCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
-        //prepareNoteCountArff();
         arffUtility.prepareNoteCountArff();
-        
-        //prepareTotalNoteCountArff();
         arffUtility.prepareTotalNoteCountArff();
-        
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
             // Scan through each line of the Tab
@@ -112,21 +120,19 @@ public class FeatureExtractor {
                     }
                 }
             }
-            //noteCountToArff(tabDatabase.getTab(i).getGrade());
             arffUtility.noteCountToArff(noteCount, tabDatabase.getTab(i).getGrade());
-            //totalNoteCountToArff(tabDatabase.getTab(i).getGrade());
             arffUtility.totalNoteCountToArff(noteCount, totalNoteCount, 
                     tabDatabase.getTab(i).getGrade());
             resetNoteCount();
         }
     }
     
- /**
+    /**
      * A method that checks the given fret and course so it can return the 
      * CHROMATIC_SCALE variable array position of the note being played.
-     * @param c
-     * @param course 
-     * @return note position
+     * @param c the current fret in the instance to be checked
+     * @param course the current course (pair of lute strings)
+     * @return note position in CHROMATIC_SCALE 
      */
     private static int checkNote(char c, int course){
         c = Character.toLowerCase(c);
@@ -182,13 +188,16 @@ public class FeatureExtractor {
                 System.out.println("There was a problem");
                 break;
         }
-        return (i + fret) % 12; // note position in the CHROMATIC_SCALE array
-                                // plus the fret. Modulus 12 (number of notes
-                                // in the chromatic scale) to give the note
-                                // played in the CHROMATIC_SCALE
+        // note position in the CHROMATIC_SCALE array plus the fret. 
+        // Modulus 12 (number of notes in the chromatic scale) to give the note
+        // played in the CHROMATIC_SCALE
+        return (i + fret) % 12;
     }
     
-    
+    /**
+     * Finds the highest note played in a Tab and writes to an arff
+     * @param tabDatabase the database of tabs
+     */
     public void highestFret(TabDatabase tabDatabase){
         arffUtility.prepareHighestFretArff();
         
@@ -214,7 +223,10 @@ public class FeatureExtractor {
         }
     }
     
-    
+    /**
+     * Finds the noteCount and highest fret and combines theses in an arff
+     * @param tabDatabase the Tab database
+     */
     public void noteCountAndHighestFret(TabDatabase tabDatabase){
         // Sets up the arff file headers
         arffUtility.prepareNoteCountHighestFretArff();
@@ -236,7 +248,6 @@ public class FeatureExtractor {
                             int pos = checkNote(instance.charAt(j), course);
                             noteCount[pos]++;
                             course++;
-                            
                             // Check highest fret
                             char c = Character.toLowerCase(instance.charAt(j));
                             int asciiValue = (int)c;
@@ -255,7 +266,11 @@ public class FeatureExtractor {
         }
     }
     
-    
+    /**
+     * Finds the count of notes played on each fret of the lute and records
+     * in fretCount
+     * @param tabDatabase the Tab database
+     */
     public void fretCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
         arffUtility.prepareFretCountArff(fretCount.length, fretCount[0].length);
@@ -290,6 +305,11 @@ public class FeatureExtractor {
         }
     }
     
+    /**
+     * Finds the number of instances in each Tab that contain more than 3 notes
+     * and writes to an arff
+     * @param tabDatabase 
+     */
     public void chordCount(TabDatabase tabDatabase){
         arffUtility.prepareChordCountArff();
         
@@ -314,6 +334,10 @@ public class FeatureExtractor {
         }
     }
     
+    /**
+     * *******This still needs looking at*********
+     * @param tabDatabase 
+     */
     public void rhythmFlagCount(TabDatabase tabDatabase){
         // Sets up the arff file headers
         arffUtility.prepareRhythmFlagCountArff();
@@ -348,6 +372,12 @@ public class FeatureExtractor {
         }
     }
     
+    /**
+     * Checks which rhythm flag is being used in an instance and increments the
+     * corresponding value of rhythmFlagCount
+     * @param c a character representing the rhythmFlag
+     * @return true or false
+     */
     private boolean checkRhythmFlag(char c){
         
         switch(c){
@@ -400,10 +430,10 @@ public class FeatureExtractor {
         
         // Find the most bar with the most notes
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Extract a bar
+            
             Tab current = new Tab(); 
             Tab mostNotes = new Tab();
-            
+            // Extract a bar
             for(int j = 0; j < tabDatabase.getTab(i).getInstances().size(); j++){
                 String instance = tabDatabase.getTab(i).getInstances().get(j);
                 

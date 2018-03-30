@@ -10,8 +10,6 @@ import java.util.ArrayList;
  * @author Joshua Foster
  */
 public class Tab {
-    //private String name;
-    // Temporary version just stores notes as strings
     private final ArrayList<String> instances;
     private int grade;
     
@@ -30,6 +28,11 @@ public class Tab {
         }
     }
     
+    /**
+     * A constructor for a Tab that takes a list of instances and an int, grade
+     * @param instances
+     * @param grade 
+     */
     public Tab(ArrayList<String> instances, int grade){
         this.instances = new ArrayList<>();
         for(String s : instances){
@@ -38,18 +41,35 @@ public class Tab {
         this.grade = grade;
     }
     
+    /**
+     * Gets the list of instances in a Tab
+     * @return instances
+     */
     public ArrayList<String> getInstances(){
         return instances;
     }
     
+    /**
+     * Adds an instance to the list of instances
+     * @param instance a musical instance
+     * @return boolean
+     */
     public boolean addInstance(String instance){
         return instances.add(instance);
     }
     
+    /**
+     * Return the grade of a piece
+     * @return grade
+     */
     public int getGrade(){
         return grade;
     }
     
+    /**
+     * Returns the number of notes played in a Tab
+     * @return count
+     */
     public int getNumberOfNotes(){
         int count = 0;
         for(String instance : instances){
@@ -81,13 +101,11 @@ public class Tab {
                 instance.charAt(0) == 'y';
     }
     
-    
     /**
      * Static method that checks if a given character in an instance is a valid
      * note
-     * @param instance
-     * @param course
-     * @param j
+     * @param instance the current line in a Tab
+     * @param j the position that the note is being played (course)
      * @return boolean
      */
     private static boolean isValidNote(String instance, int j){

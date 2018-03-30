@@ -18,6 +18,9 @@ import java.util.ArrayList;
 public class TabDatabase {
     private ArrayList<Tab> tabDatabase;
     
+    /**
+     * Default constructor for a TabDatabase
+     */
     public TabDatabase(){
         tabDatabase = new ArrayList<>();
     }
@@ -51,7 +54,7 @@ public class TabDatabase {
      * @param position 
      */
     public void printPiece(int position){
-        if(position > getSize()){
+        if(position > getSize() || position < 0){
             System.out.println("Out of bounds");
         }
         else{
@@ -67,7 +70,11 @@ public class TabDatabase {
         return tabDatabase.size();
     }
     
-    
+    /**
+     * Reads a file path and records each tab file as a Tab along with the grade
+     * @param rootFolder
+     * @throws Exception 
+     */
     public void readInTabDatabase(String rootFolder) throws Exception{
         // Create a list of all the pathways for each piece
         final ArrayList<String> pathList = walkDirTree(rootFolder);
@@ -76,7 +83,12 @@ public class TabDatabase {
         }
     }
     
-    
+    /**
+     * A method that returns an ArrayList of Strings containing musical 
+     * instances
+     * @param file
+     * @return 
+     */
     private ArrayList<String> tabReader(String file){
         String line = null;
         ArrayList<String> instances = new ArrayList<>();
@@ -94,7 +106,6 @@ public class TabDatabase {
         }
         catch(FileNotFoundException e){
             System.out.println("Unable to open " + file);
-            //System.out.println("Hello");
         }
         catch(IOException e){
             System.out.println("Unable to read file " + file);
@@ -119,7 +130,6 @@ public class TabDatabase {
         return pathList;
     }
     
-    // ******TODO: improve this method, unnecessary steps
     /**
      * A method that extracts the grade of a piece from the given file path
      * @param path
