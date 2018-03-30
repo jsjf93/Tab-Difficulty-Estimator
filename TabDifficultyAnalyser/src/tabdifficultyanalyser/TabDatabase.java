@@ -118,7 +118,7 @@ public class TabDatabase {
      * of the "pieces" folder (for example, "grade1", "grade2",..., "grade8"
      * @param rootFolder
      * @throws Exception
-     * @return ArrayList<String> - ArrayList of pathways
+     * @return pathList  ArrayList of pathways
      */
     private static ArrayList<String> walkDirTree(String rootFolder) throws Exception{
         ArrayList<String> pathList = new ArrayList<>();
