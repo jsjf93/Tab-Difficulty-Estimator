@@ -14,9 +14,15 @@
 26. Courante-
 31. Ach was seindt-
 39. Soll sich den in lieb-
+<<<<<<< HEAD
 41. Ach wie bin ich von hertzen betrubt - Bara Fosters Dream
 43. Courante La Signolle
 55. Praeludium
+=======
+41. Ach wie bin ich von hertzen betrubt - Bara Fosters Dream-
+43. Courante La Signolle-
+55. Praeludium-
+>>>>>>> bfb676c38b1b887a6bf3ac743ccf051cd892d1ef
 60. Anglica Doy - Wilson's Wilde
 65. Untitled
 65. Untitled
