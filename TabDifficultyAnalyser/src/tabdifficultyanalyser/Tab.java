@@ -265,6 +265,26 @@ public class Tab {
     }
     
     /**
+     * Returns the number of bars in a piece
+     * @return numberOfBars
+     */
+    public int getBarCount(){
+        int numberOfBars = 0;
+        for(int i = 0; i < instances.size()-2; i++){
+            // Check that instance starts with a "b" (bar line) and the next
+            // instance is not also "b" (indicating the start of a new musical
+            // phrase, and finally that the instance two instances along is not
+            // "e" which indicates the end of a Tab file
+            if(instances.get(i).equals("b") &&
+                    !instances.get(i+1).equals("b") &&
+                    !instances.get(i+2).equals("e")){
+                numberOfBars++;
+            }
+        }
+        return numberOfBars;
+    }
+    
+    /**
      * Static method that checks that a given line (instance) begins with a
      * valid rhythm flag
      * @param instance

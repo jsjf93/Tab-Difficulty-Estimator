@@ -152,4 +152,41 @@ public class FeatureExtractor {
             arffUtility.totalNoteCountToArff(totalNoteCount, tabDatabase.getTab(i).getGrade());
         }
     }
+    
+    /**
+     * Goes through each piece in the database and writes an arff containing
+     * the numbmer of bars
+     * @param tabDatabase 
+     */
+    public void numberOfBars(TabDatabase tabDatabase){
+        int numberOfBars;
+        arffUtility.prepareNumberOfBarsArff();
+        
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            numberOfBars = tabDatabase.getTab(i).getBarCount();
+            System.out.println(numberOfBars);
+            arffUtility.numberOfBarsToArff(numberOfBars, tabDatabase.getTab(i).getGrade());
+        }
+    }
+    
+    
+    public void combined(TabDatabase tabDatabase){
+        int[][] fretCount;
+        int chordCount;
+        int totalNoteCount;
+        int numberOfBars;
+        int highestFret;
+        arffUtility.prepareCombinedArff(courses, frets);
+        
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            fretCount = tabDatabase.getTab(i).getFretCount();
+            chordCount = tabDatabase.getTab(i).getChordCount();
+            totalNoteCount = tabDatabase.getTab(i).getTotalNoteCount();
+            numberOfBars = tabDatabase.getTab(i).getBarCount();
+            highestFret = tabDatabase.getTab(i).getHighestFret();
+            arffUtility.combinedToArff(fretCount, chordCount, totalNoteCount,
+                    numberOfBars, highestFret,
+                    tabDatabase.getTab(i).getGrade());
+        }    
+    }
 }
