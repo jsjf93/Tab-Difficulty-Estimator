@@ -315,28 +315,23 @@ public class ArffUtility {
     
     /**
      * A method that writes the totalNoteCount data to an ARFF
-     * @param noteCount
      * @param totalNoteCount
      * @param grade 
      */
-    public void totalNoteCountToArff(int[] noteCount, int totalNoteCount, int grade){
+    public void totalNoteCountToArff(int totalNoteCount, int grade){
         String fileName = "totalNoteCount.arff";
         
         try{
             FileWriter fw = new FileWriter(fileName, true);
             BufferedWriter bw = new BufferedWriter(fw);
             
-            for(int i = 0; i < noteCount.length; i++){
-                totalNoteCount += noteCount[i];
-            }
-            bw.write(totalNoteCount+",");
+            bw.write(totalNoteCount + ",");
             bw.write(new Integer(grade).toString());
             bw.newLine();
             bw.close();
-            totalNoteCount = 0;
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     

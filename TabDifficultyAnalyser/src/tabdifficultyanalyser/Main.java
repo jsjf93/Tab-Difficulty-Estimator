@@ -28,6 +28,7 @@ public class Main{
         ft.chordCount(db);
         ft.rhythmFlagCount(db);
         ft.advancedFretCount(db);
+        ft.totalNoteCount(db);
     }
     
 }
