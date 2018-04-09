@@ -21,13 +21,16 @@ public class Main{
         //db.printPiece(0);
         
         FeatureExtractor ft = new FeatureExtractor();
-        ft.noteCount(db);
-        ft.highestFret(db);
-        ft.noteCountAndHighestFret(db);
-        ft.fretCount(db);
-        ft.chordCount(db);
-        ft.rhythmFlagCount(db);
-        ft.advancedFretCount(db);
+//        ft.noteCount(db);
+//        ft.highestFret(db);
+//        ft.noteCountAndHighestFret(db);
+//        ft.fretCount(db);
+//        ft.chordCount(db);
+//        ft.rhythmFlagCount(db);
+//        ft.advancedFretCount(db);
+//        ft.totalNoteCount(db);
+//        ft.numberOfBars(db);
+        ft.combined(db);
     }
     
 }

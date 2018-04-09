@@ -6,192 +6,38 @@
  */
 package tabdifficultyanalyser;
 
-import java.io.BufferedWriter;
-import java.io.FileWriter;
-import java.io.IOException;
 
 /**
  *
  * @author Joshua Foster
  */
 public class FeatureExtractor {
-    private static final String[] CHROMATIC_SCALE = {"a","a#","b","c",
-                                                    "c#","d","d#","e",
-                                                    "f","f#","g","g#"};
-    // noteCount is an array of size 12. noteCount[0] represents the note A
-    // noteCount[1] represents A# and noteCount[11] represents G#
-    private final int[] noteCount; // note order; A,A#,B,C,C#,D,D#,E,F,F#,G,G#
-    private int highestFret;
-    private final int[][] fretCount;
-    private int chordCount;
-    private int totalNoteCount; // the total number of notes played in a piece
-    private int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
+    private final int courses = 10;
+    private final int frets = 16;
     // A instance of ArffUtility used to create and write arffs
     private final ArffUtility arffUtility;
-    //private final int[] rhythmFlagCount; // 2W, W, 1/2, 1/4, 1/8, 1/16, 1/32, 1/64, 1/128, triplet
-    
-    private final int[][] advancedFretCount;
     
     /**
      * Default constructor for a FeatureExtractor object
      */
     public FeatureExtractor(){
-        noteCount = new int[12];
-        fretCount = new int[10][16]; // note: may need to adjust for extra courses
-                                    // or frets if more Tabs are added to db
-        chordCount = 0;
-        totalNoteCount = 0;
-        rhythmFlagCount = new int[10];
         arffUtility = new ArffUtility();
-        advancedFretCount = new int[10][16];
     }
     
     /**
-     * Sets all the values in noteCount to 0
-     */
-    private void resetNoteCount(){
-        for(int i = 0; i < noteCount.length; i++){
-            noteCount[i] = 0;
-        }
-    }
-    
-    /**
-     * Sets all the values of fretCount to 0
-     */
-    private void resetFretCount(){
-        for(int i = 0; i < fretCount.length; i++){
-            for(int j = 0; j < fretCount[0].length; j++){
-                fretCount[i][j] = 0;
-            }
-        }
-    }
-    
-    /**
-     * Sets all the values for rhythmFlagCount to 0
-     */
-    private void resetRhythmFlagCount(){
-        for(int i = 0; i < rhythmFlagCount.length; i++){
-            rhythmFlagCount[i] = 0;
-        }
-    }
-    
-    /**
-     * Sets all the values for advancedFretCount to 0
-     */
-    private void resetAdvancedFretCount(){
-        for(int i = 0; i < advancedFretCount.length; i++){
-            for(int j = 0; j < advancedFretCount[0].length; j++){
-                advancedFretCount[i][j] = 0;
-            }
-        }
-    }
-    
-    /**
-     * A simple method that takes an instance of a TabDatabase and analyses
-     * the note counts for each piece of lute tablature. The counts are stored
-     * in noteCount.
-     * It is a simple counter for the prototype as it simply checks which notes 
-     * are used in a piece and their frequency. It passes the notes to the
-     * private void method checkNote().
-     * It also constructs a second arff file called totalNoteCount. This is
-     * the total number of note played in a piece
+     * A simple method that takes an Tab of a TabDatabase and analyses
+     * the note counts. It then writes the results to an ARFF file
      * @param tabDatabase 
      */
     public void noteCount(TabDatabase tabDatabase){
+        int[] noteCount; // note order; A,A#,B,C,C#,D,D#,E,F,F#,G,G#
         // Sets up the arff file headers
         arffUtility.prepareNoteCountArff();
-        arffUtility.prepareTotalNoteCountArff();
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Scan through each line of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){
-                    int course = 1; // course refers to pair of strings
-                    for(int j = 1; j < instance.length(); j++){
-                        if(instance.charAt(j)==' ' || instance.charAt(j)=='/'){
-                            course++;
-                        }
-                        else if(isValidNote(instance, j) && course <= 10){
-                            int pos = checkNote(instance.charAt(j), course);
-                            noteCount[pos]++;
-                            course++;
-                        }
-                    }
-                }
-            }
+            noteCount = tabDatabase.getTab(i).getNoteCount();
             arffUtility.noteCountToArff(noteCount, tabDatabase.getTab(i).getGrade());
-            arffUtility.totalNoteCountToArff(noteCount, totalNoteCount, 
-                    tabDatabase.getTab(i).getGrade());
-            resetNoteCount();
         }
-    }
-    
-    /**
-     * A method that checks the given fret and course so it can return the 
-     * CHROMATIC_SCALE variable array position of the note being played.
-     * @param c the current fret in the instance to be checked
-     * @param course the current course (pair of lute strings)
-     * @return note position in CHROMATIC_SCALE 
-     */
-    private static int checkNote(char c, int course){
-        c = Character.toLowerCase(c);
-        int asciiValue = (int)c;
-        
-        int fret = asciiValue-97; // note that fret 'a' refers to open string, 
-                                  // not first fret which is why -97 is used                       
-        String open; // used to indicate the open course note
-        int i = 0;   // used to indicate the open course note position in the
-                     // constant CHROMATIC_SCALE String array
-        switch(course){
-            case 1:
-                open = "g";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 2:
-                open = "d";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 3:
-                open = "a";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 4:
-                open = "f";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 5:
-                open = "c";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 6:
-                open = "g";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 7:
-                open = "f";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 8:
-                open = "d#";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 9:
-                open = "d";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            case 10:
-                open = "c";
-                while(!open.equals(CHROMATIC_SCALE[i])) i++;
-                break;
-            default:
-                System.out.println("There was a problem");
-                break;
-        }
-        // note position in the CHROMATIC_SCALE array plus the fret. 
-        // Modulus 12 (number of notes in the chromatic scale) to give the note
-        // played in the CHROMATIC_SCALE
-        return (i + fret) % 12;
     }
     
     /**
@@ -199,25 +45,11 @@ public class FeatureExtractor {
      * @param tabDatabase the database of tabs
      */
     public void highestFret(TabDatabase tabDatabase){
+        int highestFret;
         arffUtility.prepareHighestFretArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Go through each line (or instance) of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){
-                    for(int j = 1; j < instance.length(); j++){
-                        if(isValidNote(instance, j)){
-                            char c = Character.toLowerCase(instance.charAt(j));
-                            int asciiValue = (int)c;
-                            int fret = asciiValue-97;
-                            if(fret > highestFret){
-                                highestFret = fret;
-                            }
-                        }
-                    }
-                }
-            }
+            highestFret = tabDatabase.getTab(i).getHighestFret();
             arffUtility.highestFretToArff(highestFret, tabDatabase.getTab(i).getGrade());
             highestFret = 0;
         }
@@ -228,41 +60,17 @@ public class FeatureExtractor {
      * @param tabDatabase the Tab database
      */
     public void noteCountAndHighestFret(TabDatabase tabDatabase){
+        int[] noteCount;
+        int highestFret;
         // Sets up the arff file headers
         arffUtility.prepareNoteCountHighestFretArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Scan through each line of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){  
-                    int course = 1; // course refers to pair of strings
-                    for(int j = 1; j < instance.length(); j++){
-                        if(instance.charAt(j) == ' ' || 
-                                instance.charAt(j) == '/'){
-                            course++;
-                        }
-                        else if(isValidNote(instance, j) &&
-                                course <= 10){
-                            int pos = checkNote(instance.charAt(j), course);
-                            noteCount[pos]++;
-                            course++;
-                            // Check highest fret
-                            char c = Character.toLowerCase(instance.charAt(j));
-                            int asciiValue = (int)c;
-                            int fret = asciiValue-97;
-                            if(fret > highestFret){
-                                highestFret = fret;
-                            }
-                        }
-                    }
-                }
-            }
+            noteCount = tabDatabase.getTab(i).getNoteCount();
+            highestFret = tabDatabase.getTab(i).getHighestFret();
             arffUtility.noteCountHighestFretToArff(noteCount, highestFret, 
                     tabDatabase.getTab(i).getGrade());
-            resetNoteCount();
-            highestFret = 0;
         }
     }
     
@@ -272,36 +80,14 @@ public class FeatureExtractor {
      * @param tabDatabase the Tab database
      */
     public void fretCount(TabDatabase tabDatabase){
+        int[][] fretCount;
         // Sets up the arff file headers
-        arffUtility.prepareFretCountArff(fretCount.length, fretCount[0].length);
+        arffUtility.prepareFretCountArff(courses, frets);
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Scan through each line of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){  
-                    int course = 1; // course refers to pair of strings
-                    for(int j = 1; j < instance.length(); j++){
-                        // Checks course
-                        if(instance.charAt(j) == ' ' || 
-                                instance.charAt(j) == '/'){
-                            course++;
-                        }
-                        // Checks for letter indicating fret
-                        else if(isValidNote(instance, j) &&
-                                course <= 10){
-                            char c = Character.toLowerCase(instance.charAt(j));
-                            int asciiValue = (int)c;
-                            int fret = asciiValue - 97;
-                            fretCount[course-1][fret]++;
-                            course++;
-                        }
-                    }
-                }
-            }
+            fretCount = tabDatabase.getTab(i).getFretCount();
             arffUtility.fretCountToArff(fretCount, tabDatabase.getTab(i).getGrade());
-            resetFretCount();
         }
     }
     
@@ -311,26 +97,12 @@ public class FeatureExtractor {
      * @param tabDatabase 
      */
     public void chordCount(TabDatabase tabDatabase){
+        int chordCount;
         arffUtility.prepareChordCountArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // Go through each line (or instance) of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){
-                    int numNotesInInstance = 0;
-                    for(int j = 1; j < instance.length(); j++){
-                        if(isValidNote(instance, j)){
-                            numNotesInInstance++;
-                        }
-                    }
-                    if(numNotesInInstance >= 3){
-                        chordCount++;
-                    }
-                }
-            }
+            chordCount = tabDatabase.getTab(i).getChordCount();
             arffUtility.chordCountToArff(chordCount, tabDatabase.getTab(i).getGrade());
-            chordCount = 0;
         }
     }
     
@@ -339,85 +111,17 @@ public class FeatureExtractor {
      * @param tabDatabase 
      */
     public void rhythmFlagCount(TabDatabase tabDatabase){
+        int[] rhythmFlagCount;
         // Sets up the arff file headers
         arffUtility.prepareRhythmFlagCountArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            // previousFlag used to store the previous note if it was given 'x'
-            // which indicates grouping
-            char previousFlag = ' ';
-            // Scan through each line of the Tab
-            for(String instance : tabDatabase.getTab(i).getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){  
-                    if(Character.isDigit(instance.charAt(0))){
-                        checkRhythmFlag(instance.charAt(0));
-                        previousFlag = instance.charAt(0);
-                    }
-                    // currently a problem with a few inputs here as previousFlag
-                    // is considered as ' ' 
-                    else if(instance.charAt(0) == 'x'){
-                        checkRhythmFlag(previousFlag);
-                    }
-                    else if(instance.charAt(0) == '#' &&
-                            Character.isDigit(instance.charAt(1))){
-                        checkRhythmFlag(instance.charAt(1));
-                        previousFlag = instance.charAt(1);
-                    }
-                }
-            }
+            rhythmFlagCount = tabDatabase.getTab(i).getRhythmFlagCount();
             arffUtility.rhythmFlagCountToArff(rhythmFlagCount, tabDatabase.getTab(i).getGrade());
-            resetRhythmFlagCount();
         }
     }
-    
-    /**
-     * Checks which rhythm flag is being used in an instance and increments the
-     * corresponding value of rhythmFlagCount
-     * @param c a character representing the rhythmFlag
-     * @return true or false
-     */
-    private boolean checkRhythmFlag(char c){
         
-        switch(c){
-            case 'W':
-                rhythmFlagCount[0]++;
-                break;
-            case 'w':
-                rhythmFlagCount[1]++;
-                break;
-            case '0':
-                rhythmFlagCount[2]++;
-                break;
-            case '1':
-                rhythmFlagCount[3]++;
-                break;
-            case '2':
-                rhythmFlagCount[4]++;
-                break;
-            case '3':
-                rhythmFlagCount[5]++;
-                break;
-            case '4':
-                rhythmFlagCount[6]++;
-                break;
-            case '5':
-                rhythmFlagCount[7]++;
-                break;
-            case '6':
-                rhythmFlagCount[8]++;
-                break;
-            case 't':
-                rhythmFlagCount[9]++;
-                break;
-            default:
-                System.out.println("Invalid input: " + c);
-                return false;
-        }
-        return true;
-    }
-    
     
     /**
      * A method that seeks the bar of a Tab that features the highest number of
@@ -425,86 +129,64 @@ public class FeatureExtractor {
      * @param tabDatabase 
      */
     public void advancedFretCount(TabDatabase tabDatabase){
-        arffUtility.prepareAdvancedFretCountArff(advancedFretCount.length, 
-            advancedFretCount[0].length);
+        int[][] advancedFretCount;
+        arffUtility.prepareAdvancedFretCountArff(courses, frets);
         
         // Find the most bar with the most notes
         for(int i = 0; i < tabDatabase.getSize(); i++){
-            
-            Tab current = new Tab(); 
-            Tab mostNotes = new Tab();
-            // Extract a bar
-            for(int j = 0; j < tabDatabase.getTab(i).getInstances().size(); j++){
-                String instance = tabDatabase.getTab(i).getInstances().get(j);
-                
-                if(isRhythmFlag(instance)){
-                    current.addInstance(instance);
-                }
-                else if(instance.charAt(0) == 'b'){
-                    if(mostNotes.getNumberOfNotes() < current.getNumberOfNotes()){
-                        mostNotes = current;
-                    }
-                    current = new Tab();
-                }
-            }
-            
-            // Get the advancedFretCount for the bar with the highest number
-            // of notes
-            for(String instance : mostNotes.getInstances()){
-                // Checks that the line starts with a rhythm flag
-                if(isRhythmFlag(instance)){  
-                    int course = 1; // course refers to pair of strings
-                    for(int j = 1; j < instance.length(); j++){
-                        // Checks course
-                        if(instance.charAt(j) == ' ' || 
-                                instance.charAt(j) == '/'){
-                            course++;
-                        }
-                        // Checks for letter indicating fret
-                        else if(isValidNote(instance, j) && course <= 10){
-                            char c = Character.toLowerCase(instance.charAt(j));
-                            int asciiValue = (int)c;
-                            int fret = asciiValue - 97;
-                            advancedFretCount[course-1][fret]++;
-                            course++;
-                        }
-                    }
-                }
-            }
-            // Get the advancedFretCount
+            advancedFretCount = tabDatabase.getTab(i).getAdvancedFretCount();
             arffUtility.advancedFretCountToArff(advancedFretCount, tabDatabase.getTab(i).getGrade());
-            resetAdvancedFretCount();
         }
     }
     
     /**
-     * Static method that checks that a given line (instance) begins with a
-     * valid rhythm flag
-     * @param instance
-     * @return boolean
+     * Writes an arff containing the total number of notes played in each Tab
+     * @param tabDatabase 
      */
-    private static boolean isRhythmFlag(String instance){
-        return Character.isDigit(instance.charAt(0)) || 
-                instance.charAt(0) == 'x' || 
-                instance.charAt(0) == '#' ||
-                instance.charAt(0) == 'Y' ||
-                instance.charAt(0) == 'y';
+    public void totalNoteCount(TabDatabase tabDatabase){
+        int totalNoteCount;
+        arffUtility.prepareTotalNoteCountArff();
+        
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            totalNoteCount = tabDatabase.getTab(i).getTotalNoteCount();
+            arffUtility.totalNoteCountToArff(totalNoteCount, tabDatabase.getTab(i).getGrade());
+        }
+    }
+    
+    /**
+     * Goes through each piece in the database and writes an arff containing
+     * the numbmer of bars
+     * @param tabDatabase 
+     */
+    public void numberOfBars(TabDatabase tabDatabase){
+        int numberOfBars;
+        arffUtility.prepareNumberOfBarsArff();
+        
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            numberOfBars = tabDatabase.getTab(i).getBarCount();
+            System.out.println(numberOfBars);
+            arffUtility.numberOfBarsToArff(numberOfBars, tabDatabase.getTab(i).getGrade());
+        }
     }
     
     
-    /**
-     * Static method that checks if a given character in an instance is a valid
-     * note
-     * @param instance
-     * @param course
-     * @param j
-     * @return boolean
-     */
-    private static boolean isValidNote(String instance, int j){
-        return Character.isLetter(instance.charAt(j)) &&
-                instance.charAt(j) != 'X' &&
-                instance.charAt(j) != 'U' &&
-                instance.charAt(j) != 'x' &&
-                instance.charAt(j) != 't';
+    public void combined(TabDatabase tabDatabase){
+        int[][] fretCount;
+        int chordCount;
+        int totalNoteCount;
+        int numberOfBars;
+        int highestFret;
+        arffUtility.prepareCombinedArff(courses, frets);
+        
+        for(int i = 0; i < tabDatabase.getSize(); i++){
+            fretCount = tabDatabase.getTab(i).getFretCount();
+            chordCount = tabDatabase.getTab(i).getChordCount();
+            totalNoteCount = tabDatabase.getTab(i).getTotalNoteCount();
+            numberOfBars = tabDatabase.getTab(i).getBarCount();
+            highestFret = tabDatabase.getTab(i).getHighestFret();
+            arffUtility.combinedToArff(fretCount, chordCount, totalNoteCount,
+                    numberOfBars, highestFret,
+                    tabDatabase.getTab(i).getGrade());
+        }    
     }
 }

@@ -315,28 +315,23 @@ public class ArffUtility {
     
     /**
      * A method that writes the totalNoteCount data to an ARFF
-     * @param noteCount
      * @param totalNoteCount
      * @param grade 
      */
-    public void totalNoteCountToArff(int[] noteCount, int totalNoteCount, int grade){
+    public void totalNoteCountToArff(int totalNoteCount, int grade){
         String fileName = "totalNoteCount.arff";
         
         try{
             FileWriter fw = new FileWriter(fileName, true);
             BufferedWriter bw = new BufferedWriter(fw);
             
-            for(int i = 0; i < noteCount.length; i++){
-                totalNoteCount += noteCount[i];
-            }
-            bw.write(totalNoteCount+",");
+            bw.write(totalNoteCount + ",");
             bw.write(new Integer(grade).toString());
             bw.newLine();
             bw.close();
-            totalNoteCount = 0;
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -464,6 +459,117 @@ public class ArffUtility {
         }
         catch(IOException e){
             System.out.println("e");
+        }
+    }
+    
+    /**
+     * Creates an arff file for numberOfBars
+     */
+    public void prepareNumberOfBarsArff(){
+        String fileName = "numberOfBars.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("@relation numberOfBars");
+            bw.newLine();
+            bw.newLine();bw.write("@attribute bars numeric");
+            bw.newLine();
+            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@data");
+            bw.newLine();
+            
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println("e");
+        }
+    }
+    
+    /**
+     * Writes the data from numberOfBars to numberOfBars.arff
+     * @param numberOfBars
+     * @param grade 
+     */
+    public void numberOfBarsToArff(int numberOfBars, int grade){
+        String fileName = "numberOfBars.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            
+            bw.write(numberOfBars + ",");
+            bw.write(new Integer(grade).toString());
+            bw.newLine();
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+    }
+    
+    
+    public void prepareCombinedArff(int m, int n){
+        String fileName = "combined.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName);
+            BufferedWriter bw = new BufferedWriter(fw);
+            bw.write("@relation combined");
+            bw.newLine();
+            bw.newLine();
+            for(int i = 1; i <= m; i++){
+                for(int j = 0; j < n; j++){
+                    bw.write("@attribute [" + i + "][" + j + "] numeric");
+                    bw.newLine();
+                }
+            }
+            bw.newLine();
+            bw.write("@attribute chordCount numeric");
+            bw.newLine();
+            bw.write("@attribute totalNoteCount numeric");
+            bw.newLine();
+            bw.write("@attribute bars numeric");
+            bw.newLine();
+            bw.write("@attribute highestFret numeric");
+            bw.newLine();
+            bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
+            bw.newLine();
+            bw.newLine();
+            bw.write("@data");
+            bw.newLine();
+            
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println(e);
+        }
+    }
+    
+    public void combinedToArff(int[][] fretCount, int chordCount, 
+            int totalNoteCount, int numberOfBars, int highestFret, int grade){
+        String fileName = "combined.arff";
+        
+        try{
+            FileWriter fw = new FileWriter(fileName, true);
+            BufferedWriter bw = new BufferedWriter(fw);
+            for(int i = 0; i < fretCount.length; i++){
+                for(int j = 0; j < fretCount[0].length; j++){
+                    bw.write(fretCount[i][j] + ",");
+                }
+            }
+            bw.write(chordCount + ",");
+            bw.write(totalNoteCount + ",");
+            bw.write(numberOfBars + ",");
+            bw.write(highestFret + ",");
+            bw.write(Integer.toString(grade));
+            bw.newLine();
+            bw.close();
+        }
+        catch(IOException e){
+            System.out.println(e);
         }
     }
 }
