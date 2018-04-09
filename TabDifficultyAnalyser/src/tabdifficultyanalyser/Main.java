@@ -1,5 +1,8 @@
 /*
  * The main class that initiates the program.
+ * It creates an instance of a TabDatabase after being passed the root folder 
+ * for the graded pieces and then creates an instance of the FeatureExtractor
+ * and creates each of the ARFFs ready to be used by weka.
  */
 package tabdifficultyanalyser;
 
@@ -17,20 +20,18 @@ public class Main{
         db.readInTabDatabase(rootFolder);
         // Print out the size of the database
         System.out.println(db.getSize());
-        // Print out a tab to check that it has been read correctly
-        //db.printPiece(0);
-        
+        // Create an instance of the FeatureExtractor
         FeatureExtractor ft = new FeatureExtractor();
-//        ft.noteCount(db);
-//        ft.highestFret(db);
-//        ft.noteCountAndHighestFret(db);
-//        ft.fretCount(db);
-//        ft.chordCount(db);
-//        ft.rhythmFlagCount(db);
-//        ft.advancedFretCount(db);
-//        ft.totalNoteCount(db);
-//        ft.numberOfBars(db);
+        // Create the ARFFs
+        ft.noteCount(db);
+        ft.highestFret(db);
+        ft.noteCountAndHighestFret(db);
+        ft.fretCount(db);
+        ft.chordCount(db);
+        ft.rhythmFlagCount(db);
+        ft.advancedFretCount(db);
+        ft.totalNoteCount(db);
+        ft.numberOfBars(db);
         ft.combined(db);
-    }
-    
+    } 
 }

@@ -31,12 +31,14 @@ public class FeatureExtractor {
      */
     public void noteCount(TabDatabase tabDatabase){
         int[] noteCount; // note order; A,A#,B,C,C#,D,D#,E,F,F#,G,G#
+        int grade;
         // Sets up the arff file headers
         arffUtility.prepareNoteCountArff();
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
             noteCount = tabDatabase.getTab(i).getNoteCount();
-            arffUtility.noteCountToArff(noteCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.noteCountToArff(noteCount, grade);
         }
     }
     
@@ -46,12 +48,13 @@ public class FeatureExtractor {
      */
     public void highestFret(TabDatabase tabDatabase){
         int highestFret;
+        int grade;
         arffUtility.prepareHighestFretArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             highestFret = tabDatabase.getTab(i).getHighestFret();
-            arffUtility.highestFretToArff(highestFret, tabDatabase.getTab(i).getGrade());
-            highestFret = 0;
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.highestFretToArff(highestFret, grade);
         }
     }
     
@@ -62,6 +65,7 @@ public class FeatureExtractor {
     public void noteCountAndHighestFret(TabDatabase tabDatabase){
         int[] noteCount;
         int highestFret;
+        int grade;
         // Sets up the arff file headers
         arffUtility.prepareNoteCountHighestFretArff();
         
@@ -69,25 +73,27 @@ public class FeatureExtractor {
         for(int i = 0; i < tabDatabase.getSize(); i++){
             noteCount = tabDatabase.getTab(i).getNoteCount();
             highestFret = tabDatabase.getTab(i).getHighestFret();
-            arffUtility.noteCountHighestFretToArff(noteCount, highestFret, 
-                    tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.noteCountHighestFretToArff(noteCount,highestFret,grade);
         }
     }
     
     /**
      * Finds the count of notes played on each fret of the lute and records
-     * in fretCount
+     * in fretCount.arff
      * @param tabDatabase the Tab database
      */
     public void fretCount(TabDatabase tabDatabase){
         int[][] fretCount;
+        int grade;
         // Sets up the arff file headers
         arffUtility.prepareFretCountArff(courses, frets);
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
             fretCount = tabDatabase.getTab(i).getFretCount();
-            arffUtility.fretCountToArff(fretCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.fretCountToArff(fretCount, grade);
         }
     }
     
@@ -98,11 +104,13 @@ public class FeatureExtractor {
      */
     public void chordCount(TabDatabase tabDatabase){
         int chordCount;
+        int grade;
         arffUtility.prepareChordCountArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             chordCount = tabDatabase.getTab(i).getChordCount();
-            arffUtility.chordCountToArff(chordCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.chordCountToArff(chordCount, grade);
         }
     }
     
@@ -112,13 +120,15 @@ public class FeatureExtractor {
      */
     public void rhythmFlagCount(TabDatabase tabDatabase){
         int[] rhythmFlagCount;
+        int grade;
         // Sets up the arff file headers
         arffUtility.prepareRhythmFlagCountArff();
         
         // Go through each Tab in the TabDatabase
         for(int i = 0; i < tabDatabase.getSize(); i++){
             rhythmFlagCount = tabDatabase.getTab(i).getRhythmFlagCount();
-            arffUtility.rhythmFlagCountToArff(rhythmFlagCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.rhythmFlagCountToArff(rhythmFlagCount, grade);
         }
     }
         
@@ -130,12 +140,14 @@ public class FeatureExtractor {
      */
     public void advancedFretCount(TabDatabase tabDatabase){
         int[][] advancedFretCount;
+        int grade;
         arffUtility.prepareAdvancedFretCountArff(courses, frets);
         
         // Find the most bar with the most notes
         for(int i = 0; i < tabDatabase.getSize(); i++){
             advancedFretCount = tabDatabase.getTab(i).getAdvancedFretCount();
-            arffUtility.advancedFretCountToArff(advancedFretCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.advancedFretCountToArff(advancedFretCount, grade);
         }
     }
     
@@ -145,11 +157,13 @@ public class FeatureExtractor {
      */
     public void totalNoteCount(TabDatabase tabDatabase){
         int totalNoteCount;
+        int grade;
         arffUtility.prepareTotalNoteCountArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             totalNoteCount = tabDatabase.getTab(i).getTotalNoteCount();
-            arffUtility.totalNoteCountToArff(totalNoteCount, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.totalNoteCountToArff(totalNoteCount, grade);
         }
     }
     
@@ -160,22 +174,28 @@ public class FeatureExtractor {
      */
     public void numberOfBars(TabDatabase tabDatabase){
         int numberOfBars;
+        int grade;
         arffUtility.prepareNumberOfBarsArff();
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
             numberOfBars = tabDatabase.getTab(i).getBarCount();
-            System.out.println(numberOfBars);
-            arffUtility.numberOfBarsToArff(numberOfBars, tabDatabase.getTab(i).getGrade());
+            grade = tabDatabase.getTab(i).getGrade();
+            arffUtility.numberOfBarsToArff(numberOfBars, grade);
         }
     }
     
-    
+    /**
+     * Creates an ARFF containing fretCount, chordCount, totalNoteCount,
+     * numberOfBars and highestFret
+     * @param tabDatabase 
+     */
     public void combined(TabDatabase tabDatabase){
         int[][] fretCount;
         int chordCount;
         int totalNoteCount;
         int numberOfBars;
         int highestFret;
+        int grade;
         arffUtility.prepareCombinedArff(courses, frets);
         
         for(int i = 0; i < tabDatabase.getSize(); i++){
@@ -184,9 +204,9 @@ public class FeatureExtractor {
             totalNoteCount = tabDatabase.getTab(i).getTotalNoteCount();
             numberOfBars = tabDatabase.getTab(i).getBarCount();
             highestFret = tabDatabase.getTab(i).getHighestFret();
+            grade = tabDatabase.getTab(i).getGrade();
             arffUtility.combinedToArff(fretCount, chordCount, totalNoteCount,
-                    numberOfBars, highestFret,
-                    tabDatabase.getTab(i).getGrade());
+                                       numberOfBars, highestFret, grade);
         }    
     }
 }

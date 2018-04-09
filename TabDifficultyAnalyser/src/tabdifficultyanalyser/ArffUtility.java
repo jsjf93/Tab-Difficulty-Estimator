@@ -12,7 +12,6 @@ import java.io.IOException;
  * @author Joshua Foster
  */
 public class ArffUtility {
-    
     private static final String[] CHROMATIC_SCALE = {"a","a#","b","c",
                                                     "c#","d","d#","e",
                                                     "f","f#","g","g#"};
@@ -43,7 +42,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -67,7 +66,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     } 
     
@@ -116,7 +115,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -174,7 +173,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
         
     }
@@ -209,7 +208,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -234,7 +233,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -399,7 +398,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     } 
     
@@ -433,7 +432,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -458,7 +457,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     
@@ -484,7 +483,7 @@ public class ArffUtility {
             bw.close();
         }
         catch(IOException e){
-            System.out.println("e");
+            System.out.println(e);
         }
     }
     

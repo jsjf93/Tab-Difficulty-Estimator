@@ -1,5 +1,6 @@
 /*
- * A class to represent an individual lute piece
+ * A class to represent an individual lute piece.
+ * This class contains all the methods for extracting data from a data.
  */
 package tabdifficultyanalyser;
 
@@ -13,11 +14,13 @@ public class Tab {
     private final ArrayList<String> instances;
     private int grade;
     
-    
     private static final String[] CHROMATIC_SCALE = {"a","a#","b","c",
                                                     "c#","d","d#","e",
                                                     "f","f#","g","g#"};
     
+    /**
+     * Default constructor for a Tab
+     */
     public Tab(){
         instances = new ArrayList<>();
     }
@@ -78,6 +81,7 @@ public class Tab {
      * It is a simple counter for the prototype as it simply checks which notes 
      * are used in a piece and their frequency. It passes the notes to the
      * private void method checkNote().
+     * @return noteCount
      */
     public int[] getNoteCount(){
         // note order; A,A#,B,C,C#,D,D#,E,F,F#,G,G#
@@ -104,7 +108,7 @@ public class Tab {
     
     /**
      * Finds the highest note played in a Tab and writes to an arff
-     * @param tabDatabase the database of tabs
+     * @return highestFret
      */
     public int getHighestFret(){
         int highestFret = 0;
@@ -419,7 +423,7 @@ public class Tab {
                 rhythmFlagCount[9]++;
                 break;
             default:
-                System.out.println("Invalid input: " + c);
+                //System.out.println("Invalid input: " + c);
                 return false;
         }
         return true;
