@@ -28,23 +28,32 @@ public class Main{
         // Generate the ARFFs
         generateArffs(db);
         
+        String[] arffs = {"noteCount.arff", "highestFret.arff", 
+                          "noteCountHighestFret.arff", "fretCount.arff",
+                          "chordCount.arff", "rhythmFlagCount.arff",
+                          "advancedFretCount.arff", "totalNoteCount.arff",
+                          "numberOfBars.arff", "combined.arff"};
         
-        // Load data
-        String filePath = "combined.arff";
-        Instances data = loadData(filePath);
-        
-        // Create instance of Naive Bayes classifier and Evaluation object
-        NaiveBayes nb = new NaiveBayes();
-        Evaluation e = new Evaluation(data);
-        // Number of folds for cross validation
-        int folds = 10;
-        // Cross validate
-        e.crossValidateModel(nb, data, folds, new Random(1));
-        // Output results
-        System.out.println(e.toSummaryString());
-        System.out.println(e.toMatrixString("=== Confusion Matrix ==="));
-        
-        
+        for(String arff : arffs){
+            System.out.println();
+            System.out.println("*************** " + arff + " ***************");
+            // Load arff
+            Instances data = loadData(arff);
+            
+            // Create instance of Naive Bayes classifier and Evaluation object
+            NaiveBayes nb = new NaiveBayes();
+            Evaluation e = new Evaluation(data);
+            // Number of folds for cross validation
+            int folds = 100;
+            // Cross validate
+            e.crossValidateModel(nb, data, folds, new Random(1));
+            // Output results
+            System.out.println(e.toSummaryString());
+            System.out.println("Error rate: " + e.errorRate());
+            System.out.println();
+            System.out.println(e.toMatrixString("=== Confusion Matrix ==="));
+            
+        }
     }
     
     /**
