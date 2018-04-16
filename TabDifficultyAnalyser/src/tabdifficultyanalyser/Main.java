@@ -44,7 +44,7 @@ public class Main{
             NaiveBayes nb = new NaiveBayes();
             Evaluation e = new Evaluation(data);
             // Number of folds for cross validation
-            int folds = 100;
+            int folds = 10;
             // Cross validate
             e.crossValidateModel(nb, data, folds, new Random(1));
             // Output results
