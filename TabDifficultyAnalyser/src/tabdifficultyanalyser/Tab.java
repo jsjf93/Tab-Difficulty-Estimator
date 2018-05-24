@@ -145,8 +145,7 @@ public class Tab {
                 int course = 1; // course refers to pair of strings
                 for(int j = 1; j < instance.length(); j++){
                     // Checks course
-                    if(instance.charAt(j) == ' ' || 
-                            instance.charAt(j) == '/'){
+                    if(instance.charAt(j) == ' ' || instance.charAt(j) == '/'){
                         course++;
                     }
                     // Checks for letter indicating fret

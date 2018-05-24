@@ -525,14 +525,11 @@ public class ArffUtility {
                     bw.newLine();
                 }
             }
-            bw.newLine();
-            bw.write("@attribute chordCount numeric");
-            bw.newLine();
-            bw.write("@attribute totalNoteCount numeric");
-            bw.newLine();
-            bw.write("@attribute bars numeric");
+            
             bw.newLine();
             bw.write("@attribute highestFret numeric");
+            bw.newLine();
+            bw.write("@attribute totalNoteCount numeric");
             bw.newLine();
             bw.write("@attribute grade {1,2,3,4,5,6,7,8}");
             bw.newLine();
@@ -547,8 +544,8 @@ public class ArffUtility {
         }
     }
     
-    public void combinedToArff(int[][] fretCount, int chordCount, 
-            int totalNoteCount, int numberOfBars, int highestFret, int grade){
+    public void combinedToArff(int[][] fretCount, int highestFret, 
+            int totalNoteCount, int grade){
         String fileName = "combined.arff";
         
         try{
@@ -559,10 +556,8 @@ public class ArffUtility {
                     bw.write(fretCount[i][j] + ",");
                 }
             }
-            bw.write(chordCount + ",");
-            bw.write(totalNoteCount + ",");
-            bw.write(numberOfBars + ",");
             bw.write(highestFret + ",");
+            bw.write(totalNoteCount + ",");
             bw.write(Integer.toString(grade));
             bw.newLine();
             bw.close();

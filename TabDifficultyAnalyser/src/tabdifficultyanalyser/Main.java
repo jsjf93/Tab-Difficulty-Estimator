@@ -11,6 +11,8 @@ import java.util.Random;
 import weka.classifiers.Classifier;
 import weka.classifiers.Evaluation;
 import weka.classifiers.bayes.NaiveBayes;
+import weka.classifiers.trees.J48;
+import weka.core.Instance;
 import weka.core.Instances;
 
 /**
@@ -34,26 +36,58 @@ public class Main{
                           "advancedFretCount.arff", "totalNoteCount.arff",
                           "numberOfBars.arff", "combined.arff"};
         
-        for(String arff : arffs){
-            System.out.println();
-            System.out.println("*************** " + arff + " ***************");
-            // Load arff
-            Instances data = loadData(arff);
-            
-            // Create instance of Naive Bayes classifier and Evaluation object
-            NaiveBayes nb = new NaiveBayes();
-            Evaluation e = new Evaluation(data);
-            // Number of folds for cross validation
-            int folds = 10;
-            // Cross validate
-            e.crossValidateModel(nb, data, folds, new Random(1));
-            // Output results
-            System.out.println(e.toSummaryString());
-            System.out.println("Error rate: " + e.errorRate());
-            System.out.println();
-            System.out.println(e.toMatrixString("=== Confusion Matrix ==="));
-            
-        }
+        // LOOCV for each arff
+//        for(String arff : arffs){
+//            System.out.println();
+//            System.out.println("*************** " + arff + " ***************");
+//            // Load arff
+//            Instances data = loadData(arff);
+//            
+//            // Create instance of Naive Bayes classifier and Evaluation object
+//            NaiveBayes nb = new NaiveBayes();
+//            //J48 tree = new J48();
+//            Evaluation e = new Evaluation(data);
+//            // Number of folds for cross validation
+//            int folds = data.size()-1;
+//            // Cross validate
+//            System.out.println("Naive Bayes");
+//            e.crossValidateModel(nb, data, folds, new Random(1));
+//            // Output results
+//            System.out.println(e.toSummaryString());
+//            System.out.println("Error rate: " + e.errorRate());
+//            System.out.println();
+//            System.out.println(e.toMatrixString("=== Confusion Matrix ==="));
+//            
+//            /*System.out.println("Tree");
+//            e = new Evaluation(data);
+//            e.crossValidateModel(tree, data, folds, new Random(1));
+//            // Output results
+//            System.out.println(e.toSummaryString());
+//            System.out.println("Error rate: " + e.errorRate());
+//            System.out.println();
+//            System.out.println(e.toMatrixString("=== Confusion Matrix ==="));*/
+//            
+//        }
+        
+        // Demonstration
+        // Read in training data
+        TabDatabase trainDB = new TabDatabase();
+        trainDB.readInTabDatabase("demo/pieces");
+        // Create arffs and load instances from combined.arff
+        generateArffs(trainDB);
+        Instances train = loadData("combined.arff");
+        // Build classifier
+        NaiveBayes nb = new NaiveBayes();
+        nb.buildClassifier(train);
+        // Read in test data (2 examples) and produce arffs
+        TabDatabase testDB = new TabDatabase();
+        testDB.readInTabDatabase("demo/demo");
+        generateArffs(testDB);
+        Instances test = loadData("combined.arff");
+        System.out.println(nb.classifyInstance(test.instance(0))+1);
+        System.out.println(nb.classifyInstance(test.instance(1))+1);
+
+        System.out.println(test.instance(1));
     }
     
     /**
